@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let data = [
   { 
     "id": 1,
@@ -34,10 +36,56 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/info', (request, response) => {
   const requestTime = new Date().toTimeString()
-  console.log('request time', requestTime)
-  const resp = "<p>Phonebook has info for 2 people</p> <br/> <p>" + requestTime + "</p>"
-  console.log('request body', resp)
+  const resp = "<p>Phonebook has info for " + data.length + " people</p> <br/> <p>" + requestTime + "</p>"
   response.send(resp)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = data.find(person => person.id === id)
+
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
+  
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = data.filter(person => person.id === id)
+
+  console.log('Success')
+  response.status(200).end()
+  
+})
+
+app.post('/api/persons/', (request, response) => {
+  const id = Math.floor(Math.random() * 500000)
+  const body = request.body
+  const name = body.name
+  const number = body.number
+  console.log('body', body)
+
+  console.log('id', id, 'name', name, 'number', number)
+
+  if (name == null) {
+    console.log('Missing a name')
+    response.status(400).end()
+  } else if (number == null) {
+    console.log('Missing a number')
+    response.status(400).end()
+  } else if (data.find(person => person.name === name) != null) {
+    console.log('This person exists already!')
+    response.status(400).end()
+  } else {
+    const newPerson = {"id": id, "name": name, "number": number}
+    data.push(newPerson)
+    console.log('Success!')
+    response.status(200).end()
+  }
+  
 })
 
 const PORT = 3001
