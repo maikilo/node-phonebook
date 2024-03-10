@@ -21,6 +21,14 @@ const personSchema = new mongoose.Schema({
   number: String
 })
 
+personSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
 const Person = mongoose.model('Person', personSchema)
 
 if (process.argv.length == 5) {
@@ -38,21 +46,21 @@ if (process.argv.length == 5) {
 }
 
 if (process.argv.length == 3) {
+    console.log('phonebook:')
     Person
     .find({})
     .then(result => {
       result.forEach(person => {
-        console.log(person)
+        console.log(`${person.name} ${person.number}`)
       })
       mongoose.connection.close()
     })
-    /* app.get('/api/person', (request, response) => { 
-        Person.find({}).then(result => {
-            result.forEach(person => {
-                console.log(person)
-            })
-            mongoose.connection.close()
-        })
+    /* app.get('/api/persons', (request, response) => { 
+      Person.
+      find({}).
+      then(persons => {
+        response.json(persons)
+      })
     }) */
 }
 
