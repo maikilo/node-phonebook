@@ -2,6 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
+const { ReturnDocument } = require('mongodb')
 
 morgan.token('req-body', function (req, res) {return JSON.stringify(req.body)})
 
@@ -70,27 +71,20 @@ app.post('/api/persons/', (request, response) => {
   if (name == null) {
     console.log('Missing a name')
     response.status(400).end()
+  }
 
-  } else if (number == null) {
+  if (number == null) {
     console.log('Missing a number')
     response.status(400).end()
-
-  } else {
-
-    const person = new Person({
-      name: name,
-      number: number
-    })
-
-    person
-    .save()
-    .then(result => {
-      console.log('Success!')
-      response.status(200).end()
-    })
-    .catch(error => next(error))
-  
   }
+
+  Person.findOneAndUpdate({name: name}, {name: name, number: number}, {ReturnDocument: 'after', upsert: true})
+  .then(newPerson => {
+    response.json(newPerson)
+    console.log("Added or updated person")
+  })
+  .catch(error => next(error))
+  
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
