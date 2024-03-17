@@ -2,9 +2,8 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
-const { ReturnDocument } = require('mongodb')
 
-morgan.token('req-body', function (req, res) {return JSON.stringify(req.body)})
+morgan.token('req-body', function (req) {return JSON.stringify(req.body)})
 
 const app = express()
 
@@ -21,45 +20,45 @@ app.get('/', (request, response) => {
 app.get('/info', (request, response, next) => {
   const requestTime = new Date().toTimeString()
   Person
-  .find({})
-  .then(() => Person.countDocuments())
-  .then(count => {
-    response.send("<p>Phonebook has info for " + count + " people</p> <br/> <p>" + requestTime + "</p>")
-  })
-  .catch(error => next(error))
+    .find({})
+    .then(() => Person.countDocuments())
+    .then(count => {
+      response.send('<p>Phonebook has info for ' + count + ' people</p> <br/> <p>' + requestTime + '</p>')
+    })
+    .catch(error => next(error))
 })
 
-app.get('/api/persons', (request, response, next) => { 
+app.get('/api/persons', (request, response, next) => {
   Person.
-  find({})
-  .then(persons => {
-    response.json(persons)
-  })
-  .catch(error => next(error))
+    find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
   Person
-  .findById(request.params.id)
-  .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person
-  .findByIdAndDelete(request.params.id)
-  .then(() => {
-    console.log('Success')
-    response.status(200).end()
-  })
-  .catch(error => next(error))
-  
+    .findByIdAndDelete(request.params.id)
+    .then(() => {
+      console.log('Success')
+      response.status(200).end()
+    })
+    .catch(error => next(error))
+
 })
 
 app.post('/api/persons/', (request, response, next) => {
@@ -79,16 +78,16 @@ app.post('/api/persons/', (request, response, next) => {
   }
 
   Person.findOneAndUpdate(
-    {name: name}, 
-    {name: name, number: number}, 
-    {ReturnDocument: 'after', upsert: true, runValidators: true, context: 'query'}
-    )
-  .then(newPerson => {
-    response.json(newPerson)
-    console.log("Added or updated person")
-  })
-  .catch(error => next(error))
-  
+    { name: name },
+    { name: name, number: number },
+    { ReturnDocument: 'after', upsert: true, runValidators: true, context: 'query' }
+  )
+    .then(newPerson => {
+      response.json(newPerson)
+      console.log('Added or updated person')
+    })
+    .catch(error => next(error))
+
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -109,18 +108,18 @@ app.put('/api/persons/:id', (request, response, next) => {
     name: body.name,
     number: body.number
   }
-  
-  Person.findByIdAndUpdate(
-    request.params.id, 
-    person, 
-    {new: true, runValidators: true, context: 'query'}
-    )
-  .then(updatedPerson => {
-    response.json(updatedPerson)
-  })
-  .catch(error => next(error))
 
-  
+  Person.findByIdAndUpdate(
+    request.params.id,
+    person,
+    { new: true, runValidators: true, context: 'query' }
+  )
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+
+
 })
 
 const unknownEndpoint = (request, response) => {

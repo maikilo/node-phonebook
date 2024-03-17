@@ -1,4 +1,3 @@
-const dotenv = require('dotenv').config()
 const mongoose = require('mongoose')
 
 const username = process.env.DB_USERNAME
@@ -31,23 +30,23 @@ personSchema.set('toJSON', {
 
 const Person = mongoose.model('Person', personSchema)
 
-if (process.argv.length == 5) {
-    const name = process.argv[3]
-    const number = process.argv[4]
-    const person = new Person({
-      name: name,
-      number: number
-    })
+if (process.argv.length === 5) {
+  const name = process.argv[3]
+  const number = process.argv[4]
+  const person = new Person({
+    name: name,
+    number: number
+  })
 
-    person.save().then(result => {
+  person.save().then(() => {
     console.log('Contact saved!')
     mongoose.connection.close()
-    })
+  })
 }
 
-if (process.argv.length == 3) {
-    console.log('phonebook:')
-    Person
+if (process.argv.length === 3) {
+  console.log('phonebook:')
+  Person
     .find({})
     .then(result => {
       result.forEach(person => {
@@ -55,7 +54,7 @@ if (process.argv.length == 3) {
       })
       mongoose.connection.close()
     })
-    
+
 }
 
 
