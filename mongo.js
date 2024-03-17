@@ -55,13 +55,7 @@ if (process.argv.length == 3) {
       })
       mongoose.connection.close()
     })
-    /* app.get('/api/persons', (request, response) => { 
-      Person.
-      find({}).
-      then(persons => {
-        response.json(persons)
-      })
-    }) */
+    
 }
 
 
