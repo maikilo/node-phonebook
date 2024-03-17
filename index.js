@@ -68,12 +68,12 @@ app.post('/api/persons/', (request, response) => {
   console.log('request', request)
   console.log('name', name, 'number', number)
 
-  if (name == null) {
+  if (name === undefined) {
     console.log('Missing a name')
     response.status(400).end()
   }
 
-  if (number == null) {
+  if (number === undefined) {
     console.log('Missing a number')
     response.status(400).end()
   }
@@ -91,12 +91,12 @@ app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   console.log('name', body.name, 'number', body.number)
 
-  if (body.name == null) {
+  if (body.name === undefined) {
     console.log('Missing a name')
     response.status(400).end()
   }
 
-  if (body.number == null) {
+  if (body.number === undefined) {
     console.log('Missing a number')
     response.status(400).end()
   }
@@ -126,7 +126,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
